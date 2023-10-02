@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+
+# Check if the environment variables are set
+if [[ -z "$ASDF_PLUGIN_PATH" || -z "$ASDF_PLUGIN_PREV_REF" || -z "$ASDF_PLUGIN_POST_REF" ]]; then
+  echo "Environment variables are not set. Exiting..."
+  exit 1
+fi
+
+echo $ASDF_PLUGIN_PATH
+echo $ASDF_PLUGIN_PREV_REF
+echo $ASDF_PLUGIN_POST_REF
+
+# Define variables for the old and new paths
+OLD_VERSION_PATH="$ASDF_PLUGIN_PATH/installs/helm-diff/$ASDF_PLUGIN_PREV_REF/helm-diff"
+NEW_VERSION_PATH="$ASDF_PLUGIN_PATH/installs/helm-diff/$ASDF_PLUGIN_POST_REF/helm-diff"
+
+# Check if the new version path exists
+if [[ ! -f "$NEW_VERSION_PATH" ]]; then
+  echo "New version path $NEW_VERSION_PATH does not exist. Exiting..."
+  exit 1
+fi
+
+# Update the symlink
+ln -sf "$NEW_VERSION_PATH" "$ASDF_PLUGIN_PATH/plugins/helm-diff"
+
+echo "Symbolic link updated to $NEW_VERSION_PATH"
